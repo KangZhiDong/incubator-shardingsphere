@@ -27,13 +27,13 @@ import org.apache.shardingsphere.core.merge.dal.show.ShowIndexMergedResult;
 import org.apache.shardingsphere.core.merge.dal.show.ShowOtherMergedResult;
 import org.apache.shardingsphere.core.merge.dal.show.ShowTableStatusMergedResult;
 import org.apache.shardingsphere.core.merge.dal.show.ShowTablesMergedResult;
-import org.apache.shardingsphere.core.metadata.table.ShardingTableMetaData;
-import org.apache.shardingsphere.core.parse.antlr.sql.statement.dal.DALStatement;
-import org.apache.shardingsphere.core.parse.old.parser.dialect.mysql.statement.ShowCreateTableStatement;
-import org.apache.shardingsphere.core.parse.old.parser.dialect.mysql.statement.ShowDatabasesStatement;
-import org.apache.shardingsphere.core.parse.old.parser.dialect.mysql.statement.ShowIndexStatement;
-import org.apache.shardingsphere.core.parse.old.parser.dialect.mysql.statement.ShowTableStatusStatement;
-import org.apache.shardingsphere.core.parse.old.parser.dialect.mysql.statement.ShowTablesStatement;
+import org.apache.shardingsphere.core.metadata.table.TableMetas;
+import org.apache.shardingsphere.core.parse.sql.statement.dal.DALStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.ShowCreateTableStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.ShowDatabasesStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.ShowIndexStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.ShowTableStatusStatement;
+import org.apache.shardingsphere.core.parse.sql.statement.dal.dialect.mysql.ShowTablesStatement;
 import org.apache.shardingsphere.core.rule.ShardingRule;
 
 import java.sql.SQLException;
@@ -54,7 +54,7 @@ public final class DALMergeEngine implements MergeEngine {
     
     private final DALStatement dalStatement;
     
-    private final ShardingTableMetaData shardingTableMetaData;
+    private final TableMetas tableMetas;
     
     @Override
     public MergedResult merge() throws SQLException {
@@ -62,16 +62,16 @@ public final class DALMergeEngine implements MergeEngine {
             return new ShowDatabasesMergedResult();
         }
         if (dalStatement instanceof ShowTableStatusStatement) {
-            return new ShowTableStatusMergedResult(shardingRule, queryResults, shardingTableMetaData);
+            return new ShowTableStatusMergedResult(shardingRule, queryResults, tableMetas);
         }
         if (dalStatement instanceof ShowTablesStatement) {
-            return new ShowTablesMergedResult(shardingRule, queryResults, shardingTableMetaData);
+            return new ShowTablesMergedResult(shardingRule, queryResults, tableMetas);
         }
         if (dalStatement instanceof ShowCreateTableStatement) {
-            return new ShowCreateTableMergedResult(shardingRule, queryResults, shardingTableMetaData);
+            return new ShowCreateTableMergedResult(shardingRule, queryResults, tableMetas);
         }
         if (dalStatement instanceof ShowIndexStatement) {
-            return new ShowIndexMergedResult(shardingRule, queryResults, shardingTableMetaData);
+            return new ShowIndexMergedResult(shardingRule, queryResults, tableMetas);
         }
         return new ShowOtherMergedResult(queryResults.get(0));
     }
